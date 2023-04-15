@@ -1,0 +1,40 @@
+{% extends 'base_with_nav.html' %}
+{% block content %}
+<div class="row  d-flex justify-content-center text-center">
+<h1 class="col-auto" style="margin-top: 2%;">Playlist Details</h1>
+</div>
+<section class="container" style="width: 60rem; margin-top: 2%; scale: 70%; transform: translateY(-20%); ">
+  <div class="container text-center">
+    <div class="card row playlist-title" style="width: 60rem;">
+      <h3 class="card-title" style="font-size: 110%;">{{ playlist.title }} <i class="fa fa-play-circle" aria-hidden="true"></i></h3>
+          {% if playlist.user == user %}
+          <a href="{% url 'playlist_update' playlist.id %}">Edit</a>
+          <a href="{% url 'playlist_delete' playlist.id %}">Delete</a>
+          {% endif %}
+    {% if playlist.songs.count %}
+    {% for song in playlist.songs.all %} 
+    <div class="card playlist-songs" style="width: 60rem; margin-top: 5%;"> 
+      <div class="row">
+        <div class="col-2">
+            <img src="{{song.cover_url}}" class="playlist-song-image" style="width:85%; border-radius: 30%; margin: 3%;">
+        </div>
+        <div class="col-4 playlist-song-title">
+          <a href="{% url 'song_detail' song.id %}" style="text-decoration: none; color:black; margin-top: 4%;">{{ song.title }}</a>
+        </div>
+        <div class="col-4">
+          <a href="{% url 'song_detail' song.id %}" style="text-decoration: none; color:black; margin-top: 4%;">by {{ song.createdby }}</a>
+        </div>
+        <div class="col-2 delete-song" style="margin-top: 1%;">
+          <form action="{% url 'unassoc_song' playlist.id song.id %}" method="post">
+              {% csrf_token %}
+            <button type="submit" class="btn"><i class="fa fa-trash" aria-hidden="true"></i></button>
+          </form>  
+        </div>
+      </div> 
+    </div>
+    {% endfor %}
+    {% endif %} 
+  </div>
+</section>
+ 
+{% endblock %}

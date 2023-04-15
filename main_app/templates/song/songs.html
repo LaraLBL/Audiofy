@@ -1,0 +1,118 @@
+{% extends 'base_with_nav.html' %}
+{% block content %}
+<div class="container">
+    <div class="row height d-flex justify-content-center align-items-center">
+        {% if current_genre != '' %}
+        <div class = "col" style="margin-left:10%;">
+            <h2>{{ current_genre }}</h2>
+        </div>
+        {% endif %}
+    </div>
+        <div class = "col" style="margin-left:10%;">
+            <form action="{% url 'songs_index' %}" method="post" style="width:140%; margin-left: 30%;">
+                {% csrf_token %}
+                <input id="search-bar"name="q" type="text" placeholder=" Search for a song..." style="margin-top: 0.3%; height: 90%;">
+                <button id="btn-el5"type="submit" class="btn btn-primary" style="background-color: #0077b6; scale: 110%; margin-bottom: 0.5%; margin-top: 0.06%; ">Search</button>
+                <select name='g' class="form-select" aria-label="Default select example" style="width:15%; margin-left: 2%;">
+                    <option selected>Search by Genre</option>
+                    {% for genre in genres %}
+                    <option value={{ genre }}>{{ genre }}</option>
+                    {% endfor %}
+                </select>
+            </form>
+        </div>
+    </div>
+</div>
+<h1 class = "text-center" style="margin-bottom:2%; margin-top: 0.5%;">Available Songs</h1>
+{% for song in songs.all %}
+<div class="card cards22" style="color: black; margin: 0 10% 0 16%; margin-bottom: 1%; background: rgb(243, 249, 234); background-attachment: fixed; width:74%; font-size: 80%; box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.5);">
+    <div class="row">
+        <div class="col-1">
+            <img src="{{song.cover_url}}" style="width:85%; border-radius: 30%; margin: 3%;">
+        </div>
+        <div class="col-1">
+            <a href="{% url 'song_detail' song.id %}"><i class="fa fa-play-circle" aria-hidden="true" style="scale:130%; margin-top: 20%; text-decoration: none; color: black;"></i></a>
+        </div>
+        <div class="col-3">
+            <a href="{% url 'song_detail' song.id %}" style="text-decoration: none; color:black;"><h6 class="card-content" style="margin-top: 4%; font-size: 105%;">{{ song.title }}</h6></a>
+        </div>
+        <div class="col-3">
+            <h6 class="card-content" style="margin-top: 4%; font-size: 105%;"> by  {{ song.createdby }}</a>
+        </div>
+        <div class="col-2">
+            <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="margin-left: 10%; margin: 5% 4% 0 0; background-color: black;">
+                  Add to Playlist
+                </button>
+                <ul class="dropdown-menu">
+                {% for playlist in playlists.all %}
+                  <li>
+                    <form  class="dropdown-item" action="{% url 'assoc_song' playlist.id song.id %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn">{{ playlist.title }}</button>
+                    </form>                    
+                  </li>
+                  {% endfor %}
+                </ul>
+              </div>
+        </div>
+        <div class="col-1" style="margin-top: 0.7%;">
+            <span data-song-id="{{ song.id }}">
+                {{ song.likes }} likes
+            </span>
+            
+        </div>
+        <div class="col-1">
+            <a onclick="return like( {{ song.id }} );" style="color: black; font-weight: bold;"><i class="fa fa-heart-o" aria-hidden="true" style="margin: 22% 2% 0 0;"></i>
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    emptyHearts = document.querySelectorAll(".fa.fa-heart-o")
+    emptyHearts.forEach(function(heart) {
+        heart.addEventListener('mouseenter', function() {
+            heart.style.scale = "110%";
+        });
+        heart.addEventListener('mouseleave', function() {
+            heart.style.scale = "100%";
+        });
+        heart.addEventListener('click', function() {
+    if (heart.classList.contains("fa-heart")) {
+      heart.classList.remove("fa-heart");
+      heart.classList.add("fa-heart-o");
+      heart.style.color = "black";
+    } else {
+      heart.classList.remove("fa-heart-o");
+      heart.classList.add("fa-heart");
+      heart.style.color = "red";
+
+    }
+  });
+});
+    btnEl5 = document.getElementById("btn-el5")
+    btnEl5.addEventListener('mouseenter', function() {
+      btnEl5.style.backgroundColor = 'aqua';
+      btnEl5.style.border = 'aqua';
+      });
+    btnEl5.addEventListener('mouseleave', function() {
+      btnEl5.style.backgroundColor = '#0077b6';
+      btnEl5.style.border = '#0077b6';
+      });
+
+</script>
+{% endfor %}
+
+<script>
+    async function like(songId){
+        // alert(songId)
+        let result = await fetch("{% url 'like_song' %}" + "?songId=" + songId ).then(result => result.text())
+        let likeCount = document.querySelector(`[data-song-id = '${songId}']`)
+        likeCount.innerText = result + " likes";
+
+   }
+</script>
+
+{% endblock %}
+

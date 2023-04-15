@@ -1,0 +1,35 @@
+{% extends 'base_with_nav.html' %}
+
+{% block content %}
+<h1 class="text-center" style="padding-top: 6%;">Make a Playlist</h1>
+  <!-- Leaving the action empty makes the form post to the same url used to display it -->
+  <form action="" method="post" style="visibility: visible;">
+    <!-- Django requires the following for security purposes -->
+    {% csrf_token %}
+    <table style="margin: 2% auto; text-align: right;">
+      <!-- Render the inputs inside of <tr>s & <td>s -->
+      {{ form.as_table }}
+    </table>
+    <div style="display: flex; justify-content: center;">
+      <input type="submit" value="Submit!" class="btn btn-primary" id='btn-el4'style="width:90px; max-width: 100%; background-color:  #0077b6; color: azure; border-radius: 80px; font-weight: bold;  border: solid  #0077b6;">
+    </div>
+  </form>
+
+<script>
+  document.getElementById('id_title').style.color = 'black'
+  document.getElementById('id_title').style.height = 'auto'
+  document.getElementById('id_title').style.marginBottom = '2%'
+  document.getElementById('id_description').style.color = 'black'
+  document.getElementById('id_title').placeholder = 'Name of your Playlist'
+  document.getElementById('id_description').placeholder = 'Playlist Description'
+  btnEl4 = document.getElementById("btn-el4")
+  btnEl4.addEventListener('mouseenter', function() {
+    btnEl4.style.backgroundColor = 'aqua';
+    btnEl4.style.border = 'solid aqua';
+    });
+    btnEl4.addEventListener('mouseleave', function() {
+    btnEl4.style.backgroundColor = '#0077b6';
+    btnEl4.style.border = 'solid #0077b6';
+    });
+</script>
+{% endblock %}
